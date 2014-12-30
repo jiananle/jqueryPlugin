@@ -1,0 +1,32 @@
+html,body{
+    height: 100%;
+}
+body{
+    margin: 0;
+}
+.main{
+    background: url(img/background.jpg) no-repeat scroll;
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.money-wrap{
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    margin-left: -124px;
+    bottom: 22px;
+    z-index: 2;
+}
+.package{
+    background: url(img/package.png) no-repeat scroll transparent;
+    height: 317px;
+    margin-bottom: 10px;
+    width: 561px;
+    position: absolute;
+    left: 50%;
+    margin-left: -269px;
+    bottom: 0;
+    overflow: hidden;
+}
