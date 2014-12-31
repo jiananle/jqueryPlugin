@@ -4,14 +4,19 @@
   <meta charset="UTF-8">
   <title>Money</title>
   <link rel="stylesheet" href="app.css"/>
-  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="jquery-1.11.2.min.js"></script>
 </head>
 <body>
   <div class="main">
-    <div class="money-wrap draggable">
-      <img src="img/rmb.png">
+    <h1>在红包处 移入或移出 （动画持续时间为2s，操作间隔少于2s的不触发动画）</h1>
+
+    <div class="package">
+      <div class="pg top"></div>
+      <div class="pg bottom grab"></div>
     </div>
-    <div class="package"></div>
+
+    <div class="money draggable"></div>
+
   </div>
   <script src="index.js"></script>
 </body>
