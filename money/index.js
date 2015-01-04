@@ -70,7 +70,7 @@ $(function(){
     });
 
     /*
-    * mobil
+    * mobile
     * */
 
     $('body').on('touchstart', function(event){
