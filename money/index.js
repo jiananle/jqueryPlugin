@@ -1,74 +1,71 @@
-/*$(function(){
-    var money =  $('.draggable'),
-        timer = null;
-
-    $('.bottom').mouseenter(function(){
-        if( !timer ){
-            money.addClass('money-transform');
-            var obj = $('<div class="money-wrap draggable"><img src="img/rmb.png"></div>');
-            obj.prependTo($('.main'));
-
-            timer = setTimeout(function(){
-                money.remove();
-                money = obj;
-                timer = null;
-                $('.bottom').mouseenter();
-            }, 2000)
-        }
-    });
-})*/
-
-/*
-* 流程：
-* 1.移到红包处，cursor:grap;
-* 2.点击->cursor:grabbing->计算此时的money与鼠标的位置差->保存此时的拖拽元素
-* 3.鼠标拖拽元素想上移动
-* */
 $(function(){
-    var obj = $('.draggable'),
-        package = $('.bottom'),
-        markDrag = false,
-        diffY = 0,
-        originY = 0,
-        ORIGINBOTTOM = 50;  // 原始的bottom
+    var moneys = $('.draggable'),
+        obj = null,
+        i = moneys.length - 1,
+        freeMoveTrigger = false, // 自由移动触发器
+        FREEMOVEY = 315, // 自由移动开始的位移
+        ORIGINBOTTOM = 50,  // 原始的bottom
+        originY; // 鼠标初始的位移
 
 
-    package.mousedown(function(event){
-        obj.removeClass('animate');
-        $(this).removeClass('grab').addClass('grabbing');
-        markDrag = true;
-        originY = event.clientY;
-        diffY = event.clientY - obj.offset().top;
+    $('body').mousedown(function(event){
+        if(i >= 0){
+            $(this).removeClass('grab').addClass('grabbing');
 
-    }).mouseup(function(event){
-        $(this).removeClass('grabbing').addClass('grab');
-        markDrag = false;
-        diffY = 0;
-        originY = 0;
-        obj.addClass('animate');
-        obj.css('bottom', ORIGINBOTTOM+'px');
-    });
+            obj = moneys.eq(i);
+            originY = event.clientY;
+        }
 
 
-    $('body').mousemove(function(event){
-        if(markDrag){ // 当前有拖拽内容
-            var currBottomStr = obj.css('bottom'),
-                currBottomNum = currBottomStr.substring(0,currBottomStr.length-2),
+    }).mousemove(function(event){
+        if(obj !== null){
+            event.preventDefault();
+
+            var objBottomStr = obj.css('bottom'),
+                objBottomNum = objBottomStr.substring(0, objBottomStr.length-2),
                 diffOriginY = originY - event.clientY;
 
-            if(currBottomNum >= ORIGINBOTTOM){
-                obj.css('bottom', '+='+ diffOriginY);
+            if(objBottomNum > ORIGINBOTTOM || (objBottomNum == ORIGINBOTTOM && diffOriginY > 0)){
+                obj.css('bottom', '+=' + diffOriginY);
+                freeMoveTrigger = objBottomNum > FREEMOVEY;
                 originY = event.clientY;
+
             }else{
-                obj.css('bottom', ORIGINBOTTOM+'px');
+                freeMoveTrigger = false;
+                return;
             }
         }
+
     }).mouseup(function(event){
-        package.removeClass('grabbing').addClass('grab');
-        markDrag = false;
-        diffY = 0;
-        originY = 0;
-        obj.addClass('animate');
-        obj.css('bottom', ORIGINBOTTOM+'px');
+
+        $(this).removeClass('grabbing').addClass('grab');
+
+        if(freeMoveTrigger){
+            var left = obj.attr('data-left'),
+                bottom = obj.attr('data-bottom');
+
+            obj.addClass('animate transform');
+            obj.css({
+                'left': left + 'px',
+                'bottom': bottom + 'px'
+            });
+
+            i--;
+        }else{
+            var objBottomStr = obj.css('bottom'),
+                objBottomNum = objBottomStr.substring(0, objBottomStr.length-2);
+
+            if(objBottomNum - ORIGINBOTTOM > 20){
+                obj.animate({
+                    'bottom': ORIGINBOTTOM
+                },1500);
+            }else{
+                obj.css('bottom', ORIGINBOTTOM);
+            }
+
+        }
+
+        obj = null;
     });
+
 });
