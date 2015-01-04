@@ -8,16 +8,16 @@ $(function(){
         originY; // 鼠标初始的位移
 
 
-    $('body').mousedown(function(event){
+    $('body').on('mousedown',function(event){
         if(i >= 0){
-            $(this).removeClass('grab').addClass('grabbing');
+            $(this).addClass('grabbing');
 
             obj = moneys.eq(i);
             originY = event.clientY;
         }
 
 
-    }).mousemove(function(event){
+    }).on('mousemove', function(event){
         if(obj !== null){
             event.preventDefault();
 
@@ -36,36 +36,104 @@ $(function(){
             }
         }
 
-    }).mouseup(function(event){
+    }).on('mouseup', function(){
+        if(obj !== null){
+            $(this).removeClass('grabbing');
 
-        $(this).removeClass('grabbing').addClass('grab');
+            if(freeMoveTrigger){
+                var left = obj.attr('data-left'),
+                    bottom = obj.attr('data-bottom');
 
-        if(freeMoveTrigger){
-            var left = obj.attr('data-left'),
-                bottom = obj.attr('data-bottom');
+                obj.addClass('animate transform');
+                obj.css({
+                    'left': left + 'px',
+                    'bottom': bottom + 'px'
+                });
 
-            obj.addClass('animate transform');
-            obj.css({
-                'left': left + 'px',
-                'bottom': bottom + 'px'
-            });
-
-            i--;
-        }else{
-            var objBottomStr = obj.css('bottom'),
-                objBottomNum = objBottomStr.substring(0, objBottomStr.length-2);
-
-            if(objBottomNum - ORIGINBOTTOM > 20){
-                obj.animate({
-                    'bottom': ORIGINBOTTOM
-                },1500);
+                i--;
             }else{
-                obj.css('bottom', ORIGINBOTTOM);
+                var objBottomStr = obj.css('bottom'),
+                    objBottomNum = objBottomStr.substring(0, objBottomStr.length-2);
+
+                if(objBottomNum - ORIGINBOTTOM > 20){
+                    obj.animate({
+                        'bottom': ORIGINBOTTOM
+                    },1500);
+                }else{
+                    obj.css('bottom', ORIGINBOTTOM);
+                }
+
             }
 
+            obj = null;
+        }
+    });
+
+    /*
+    * mobil
+    * */
+
+    $('body').on('touchstart', function(event){
+        if(i >= 0){
+            var e = event.originalEvent;
+            $(this).addClass('grabbing');
+
+            obj = moneys.eq(i);
+            originY = e.touches[0].clientY;
+
+
+        }
+    }).on('touchmove', function(event){
+        if(obj !== null){
+            event.preventDefault();
+
+            var clientY = event.originalEvent.touches[0].clientY,
+                objBottomStr = obj.css('bottom'),
+                objBottomNum = objBottomStr.substring(0, objBottomStr.length-2),
+                diffOriginY = originY - clientY;
+
+            if(objBottomNum > ORIGINBOTTOM || (objBottomNum == ORIGINBOTTOM && diffOriginY > 0)){
+                obj.css('bottom', '+=' + diffOriginY);
+                freeMoveTrigger = objBottomNum > FREEMOVEY;
+                originY = clientY;
+
+            }else{
+                freeMoveTrigger = false;
+                return;
+            }
         }
 
-        obj = null;
+    }).on('touchend', function(){
+        if(obj !== null){
+            $(this).removeClass('grabbing');
+
+            if(freeMoveTrigger){
+                var left = obj.attr('data-left'),
+                    bottom = obj.attr('data-bottom');
+
+                obj.addClass('animate transform');
+                obj.css({
+                    'left': left + 'px',
+                    'bottom': bottom + 'px'
+                });
+
+                i--;
+            }else{
+                var objBottomStr = obj.css('bottom'),
+                    objBottomNum = objBottomStr.substring(0, objBottomStr.length-2);
+
+                if(objBottomNum - ORIGINBOTTOM > 20){
+                    obj.animate({
+                        'bottom': ORIGINBOTTOM
+                    },1500);
+                }else{
+                    obj.css('bottom', ORIGINBOTTOM);
+                }
+
+            }
+
+            obj = null;
+        }
     });
 
 });
