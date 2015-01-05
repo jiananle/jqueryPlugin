@@ -79,7 +79,6 @@ window.onload = function(){
 
     /*
     * mobile
-    *
     * */
     wrap.addEventListener('touchstart', function(event){
         if(i >= 0){
